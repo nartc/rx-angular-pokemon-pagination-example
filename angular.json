@@ -105,6 +105,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "rx-angular-pagination"
+    }
+  },
+  "defaultProject": "rx-angular-pagination",
+  "cli": {
+    "analytics": false
+  }
 }
