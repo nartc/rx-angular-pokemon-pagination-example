@@ -9,6 +9,10 @@ import {
     SimpleChanges
 } from "@angular/core";
 
+/**
+ * Simplified PrimeNG Paginator component
+ */
+
 @Component({
     selector: 'app-paginator',
     template: `
