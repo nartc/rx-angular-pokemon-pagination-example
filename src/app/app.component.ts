@@ -1,11 +1,9 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
-    selector: 'app-root',
-    template: `
-        <app-pokemon></app-pokemon>
-    `,
+  selector: 'app-root',
+  template: `
+    <app-pokemon></app-pokemon>
+  `,
 })
-export class AppComponent {
-
-}
+export class AppComponent {}
