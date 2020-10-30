@@ -21,8 +21,7 @@ import { debounceTime, map } from 'rxjs/operators';
         placeholder="Filter on the current page..."
         [formControl]="query"
       />
-      <h2 *ngIf="vm.status === 'loading'">Loading...</h2>
-      <table *ngIf="vm.status === 'success'">
+      <table [class.overlay]="vm.status === 'loading'">
         <thead>
           <tr>
             <th class="border-bottom">Name</th>
@@ -33,7 +32,7 @@ import { debounceTime, map } from 'rxjs/operators';
           <tr *ngFor="let result of vm.filteredResult">
             <td>{{ result.name }}</td>
             <td class="border-left">
-              <a [href]="result.url">{{ result.url }}</a>
+              <a [href]="result.url" target="_blank">{{ result.url }}</a>
             </td>
           </tr>
         </tbody>
@@ -59,6 +58,34 @@ import { debounceTime, map } from 'rxjs/operators';
         width: 50%;
         margin: 1rem 0;
       }
+
+      .overlay {
+        position: relative;
+      }
+
+      .overlay::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+      }
+
+      .overlay::after {
+        content: 'Loading...';
+        font-size: 2rem;
+        font-weight: bold;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,10 +103,10 @@ export class PokemonComponent {
   constructor(private readonly pokemonStateService: PokemonStateService) {
     this.pokemonStateService.connect(
       this.$pageChanged.asObservable().pipe(
-        map((value) => ({
-          currentPage: value.page,
-          limit: value.rows,
-          offset: value.first,
+        map((data) => ({
+          currentPage: data.page,
+          limit: data.rows,
+          offset: data.first,
         })),
       ),
     );

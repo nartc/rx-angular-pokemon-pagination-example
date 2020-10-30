@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { PaginatedPokemon } from './pokemon.mode';
 import { Observable } from 'rxjs';
 import { toApiResponse } from '../utils/to-api-response.util';
+import { delay } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class PokemonService {
@@ -20,6 +21,6 @@ export class PokemonService {
 
     return this.httpClient
       .get<PaginatedPokemon>('https://pokeapi.co/api/v2/pokemon', { params })
-      .pipe(toApiResponse(prev));
+      .pipe(delay(1500), toApiResponse(prev));
   }
 }
