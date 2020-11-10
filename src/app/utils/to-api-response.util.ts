@@ -1,6 +1,6 @@
-import { PaginatedPokemon } from '../pokemon/pokemon.mode';
 import { Observable, pipe, UnaryFunction } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { PaginatedPokemon } from '../pokemon/pokemon.model';
 
 export function toApiResponse(
   initialValue: PaginatedPokemon,

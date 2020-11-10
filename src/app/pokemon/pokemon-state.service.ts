@@ -1,7 +1,5 @@
-import { RxState } from '@rx-angular/state';
-import { Pokemon } from './pokemon.mode';
-import { PokemonService } from './pokemon.service';
 import { Injectable } from '@angular/core';
+import { RxState } from '@rx-angular/state';
 import { combineLatest } from 'rxjs';
 import {
   distinctUntilChanged,
@@ -9,6 +7,8 @@ import {
   switchMap,
   withLatestFrom,
 } from 'rxjs/operators';
+import { Pokemon } from './pokemon.model';
+import { PokemonService } from './pokemon.service';
 
 export interface PokemonState {
   status: 'loading' | 'success';
@@ -26,6 +26,7 @@ export class PokemonStateService extends RxState<PokemonState> {
   readonly originalResult$ = this.select('originalResult');
   readonly total$ = this.select('total');
   readonly limit$ = this.select('limit');
+  readonly offset$ = this.select('offset');
 
   readonly vm$ = combineLatest([
     this.select('status'),
@@ -33,13 +34,15 @@ export class PokemonStateService extends RxState<PokemonState> {
     this.select('currentPage'),
     this.total$,
     this.limit$,
+    this.offset$,
   ]).pipe(
-    map(([status, filteredResult, currentPage, total, limit]) => ({
+    map(([status, filteredResult, currentPage, total, limit, offset]) => ({
       status,
       filteredResult,
       total,
       currentPage,
       limit,
+      offset,
     })),
   );
 
@@ -59,7 +62,7 @@ export class PokemonStateService extends RxState<PokemonState> {
   }
 
   private effect$() {
-    return combineLatest([this.limit$, this.select('offset')]).pipe(
+    return combineLatest([this.limit$, this.offset$]).pipe(
       withLatestFrom(this.total$, this.originalResult$),
       switchMap(([[limit, offset], total, original]) =>
         this.pokemonService.getPokemon(limit, offset, {

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PaginatedPokemon } from './pokemon.mode';
 import { Observable } from 'rxjs';
-import { toApiResponse } from '../utils/to-api-response.util';
 import { delay } from 'rxjs/operators';
+import { toApiResponse } from '../utils/to-api-response.util';
+import { PaginatedPokemon } from './pokemon.model';
 
 @Injectable({ providedIn: 'root' })
 export class PokemonService {

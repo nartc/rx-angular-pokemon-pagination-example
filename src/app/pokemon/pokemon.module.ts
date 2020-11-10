@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PokemonComponent } from './pokemon.component';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LetModule } from '@rx-angular/template';
 import { PaginatorComponent } from '../components/paginator/paginator.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PokemonComponent } from './pokemon.component';
 
 @NgModule({
   declarations: [PokemonComponent, PaginatorComponent],

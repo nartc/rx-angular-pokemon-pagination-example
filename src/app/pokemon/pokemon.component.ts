@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PokemonStateService } from './pokemon-state.service';
-import { Subject } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import { debounceTime, map } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
+import { PokemonStateService } from './pokemon-state.service';
 
 @Component({
   selector: 'app-pokemon',
@@ -13,6 +12,7 @@ import { debounceTime, map } from 'rxjs/operators';
         [rowsPerPageOptions]="[10, 20, 40, 80]"
         [rows]="vm.limit"
         [totalRecords]="vm.total"
+        [first]="vm.offset"
         (onPageChange)="onPageChanged(vm.limit, $event)"
       ></app-paginator>
       <input
@@ -94,22 +94,8 @@ import { debounceTime, map } from 'rxjs/operators';
 export class PokemonComponent {
   vm$ = this.pokemonStateService.vm$;
   query = new FormControl();
-  private $pageChanged = new Subject<{
-    page: number;
-    rows: number;
-    first: number;
-  }>();
 
   constructor(private readonly pokemonStateService: PokemonStateService) {
-    this.pokemonStateService.connect(
-      this.$pageChanged.asObservable().pipe(
-        map((data) => ({
-          currentPage: data.page,
-          limit: data.rows,
-          offset: data.first,
-        })),
-      ),
-    );
     this.pokemonStateService.connect(
       'query',
       this.query.valueChanges.pipe(debounceTime(250)),
@@ -121,12 +107,16 @@ export class PokemonComponent {
     $event: { page: number; rows: number; first: number },
   ) {
     if ($event.rows !== currentLimit) {
-      this.$pageChanged.next({ page: 1, rows: $event.rows, first: 0 });
+      this.pokemonStateService.set({
+        currentPage: 1,
+        limit: $event.rows,
+        offset: 0,
+      });
     } else {
-      this.$pageChanged.next({
-        page: $event.page,
-        rows: $event.rows,
-        first: $event.first - $event.rows,
+      this.pokemonStateService.set({
+        currentPage: $event.page,
+        limit: $event.rows,
+        offset: $event.first - $event.rows,
       });
     }
     // Reset query on pageChanged
