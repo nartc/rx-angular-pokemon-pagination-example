@@ -5,7 +5,11 @@ import { EditTodoStateService } from './edit-todo-state.service';
   selector: 'app-edit-todo',
   template: `
     <ng-container *rxLet="vm$; let vm">
-      <pre>{{ vm | json }}</pre>
+      <h4 *ngIf="vm.status === 'loading'">Loading...</h4>
+      <app-todo-form
+        *ngIf="vm.status === 'success'"
+        [todo]="vm.data"
+      ></app-todo-form>
     </ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
