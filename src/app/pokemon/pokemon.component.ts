@@ -16,6 +16,7 @@ import { PokemonStateService } from './pokemon-state.service';
       ></app-paginator>
       <app-query
         [placeholder]="'Filter on the current page...'"
+        [currentQuery]="vm.query"
         (query)="onQueryChanged($event)"
       ></app-query>
       <table [class.overlay]="vm.status === 'loading'">

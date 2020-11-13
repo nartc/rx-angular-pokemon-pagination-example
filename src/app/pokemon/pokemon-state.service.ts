@@ -27,6 +27,7 @@ export class PokemonStateService extends RxState<PokemonState> {
       'total',
       'limit',
       'offset',
+      'query',
     ]),
   );
 

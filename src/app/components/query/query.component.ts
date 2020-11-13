@@ -32,6 +32,12 @@ import { debounceTime } from 'rxjs/operators';
 export class QueryComponent {
   @Input() placeholder: string;
 
+  @Input() set currentQuery(query: string) {
+    if (query === '') {
+      this.queryControl.setValue('', { emitEvent: false });
+    }
+  }
+
   queryControl = new FormControl('');
   @Output() query: Observable<string>;
 
