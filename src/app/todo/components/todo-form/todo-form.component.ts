@@ -19,13 +19,33 @@ import { Todo } from '../../todo.model';
         </small>
       </div>
       <div class="form-control">
-        <label for="completed">Complete</label>
-        <input type="checkbox" formControlName="completed" />
+        <label for="completed">
+          <input type="checkbox" formControlName="completed" />
+          Complete
+        </label>
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit" [disabled]="form.invalid">Submit</button>
     </form>
   `,
-  styles: [],
+  styles: [
+    `
+      .form-control {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+        width: 50%;
+      }
+
+      button {
+        display: block;
+        width: 50%;
+      }
+
+      small {
+        color: red;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoFormComponent implements OnInit {

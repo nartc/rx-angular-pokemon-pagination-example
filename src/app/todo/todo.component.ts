@@ -15,6 +15,7 @@ import { TodoStateService } from './todo-state.service';
         (onPageChange)="onPageChanged($event)"
       ></app-paginator>
       <app-query
+        debounce="0"
         [placeholder]="'Filter todo...'"
         (query)="onQueryChanged($event)"
       ></app-query>

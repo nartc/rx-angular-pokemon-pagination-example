@@ -1,4 +1,5 @@
 import {
+  Attribute,
   ChangeDetectionStrategy,
   Component,
   Input,
@@ -32,7 +33,11 @@ export class QueryComponent {
   @Input() placeholder: string;
 
   queryControl = new FormControl('');
-  @Output() query: Observable<string> = this.queryControl.valueChanges.pipe(
-    debounceTime(250),
-  );
+  @Output() query: Observable<string>;
+
+  constructor(@Attribute('debounce') debounce: string) {
+    this.query = this.queryControl.valueChanges.pipe(
+      debounceTime(debounce ? Number(debounce) : 250),
+    );
+  }
 }

@@ -26,7 +26,7 @@ const routes = [
     BrowserModule,
     HttpClientModule,
     PokemonModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
   ],
   providers: [],
   bootstrap: [AppComponent],
