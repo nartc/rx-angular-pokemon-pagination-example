@@ -1,15 +1,14 @@
 import { Observable, pipe, UnaryFunction } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { PaginatedPokemon } from '../pokemon/pokemon.model';
 
-export function toApiResponse(
-  initialValue: PaginatedPokemon,
+export function toApiResponse<TData>(
+  initialValue: TData,
 ): UnaryFunction<
-  Observable<PaginatedPokemon>,
-  Observable<{ status: 'loading' | 'success'; data: PaginatedPokemon }>
+  Observable<TData>,
+  Observable<{ status: 'loading' | 'success'; data: TData }>
 > {
   return pipe(
-    map((data: PaginatedPokemon) => ({ status: 'success' as const, data })),
+    map((data: TData) => ({ status: 'success' as const, data })),
     startWith({ status: 'loading' as const, data: initialValue }),
   );
 }

@@ -6,8 +6,16 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
+
+export interface Pagination {
+  page: number;
+  pageCount: number;
+  rows: number;
+  first: number;
+  totalRecords?: number;
+}
 
 /**
  * Simplified PrimeNG Paginator component
@@ -99,7 +107,7 @@ export class PaginatorComponent implements OnInit, OnChanges {
 
   @Input() currentPage = 1;
 
-  @Output() onPageChange: EventEmitter<any> = new EventEmitter();
+  @Output() onPageChange = new EventEmitter<Pagination>();
 
   get rows() {
     return this._rows;

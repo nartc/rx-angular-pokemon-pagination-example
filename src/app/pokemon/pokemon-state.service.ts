@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RxState } from '@rx-angular/state';
+import { RxState, selectSlice } from '@rx-angular/state';
 import { combineLatest } from 'rxjs';
 import {
   distinctUntilChanged,
@@ -7,43 +7,27 @@ import {
   switchMap,
   withLatestFrom,
 } from 'rxjs/operators';
+import { PaginationState } from '../utils/pagination-state.model';
 import { Pokemon } from './pokemon.model';
 import { PokemonService } from './pokemon.service';
 
-export interface PokemonState {
+export interface PokemonState extends PaginationState {
   status: 'loading' | 'success';
-  total: number;
   originalResult: Pokemon[];
   filteredResult: Pokemon[];
-  limit: number;
-  offset: number;
-  currentPage: number;
-  query: string;
 }
 
 @Injectable()
 export class PokemonStateService extends RxState<PokemonState> {
-  readonly originalResult$ = this.select('originalResult');
-  readonly total$ = this.select('total');
-  readonly limit$ = this.select('limit');
-  readonly offset$ = this.select('offset');
-
-  readonly vm$ = combineLatest([
-    this.select('status'),
-    this.select('filteredResult'),
-    this.select('currentPage'),
-    this.total$,
-    this.limit$,
-    this.offset$,
-  ]).pipe(
-    map(([status, filteredResult, currentPage, total, limit, offset]) => ({
-      status,
-      filteredResult,
-      total,
-      currentPage,
-      limit,
-      offset,
-    })),
+  readonly vm$ = this.select(
+    selectSlice([
+      'status',
+      'filteredResult',
+      'currentPage',
+      'total',
+      'limit',
+      'offset',
+    ]),
   );
 
   constructor(private readonly pokemonService: PokemonService) {
@@ -62,8 +46,8 @@ export class PokemonStateService extends RxState<PokemonState> {
   }
 
   private effect$() {
-    return combineLatest([this.limit$, this.offset$]).pipe(
-      withLatestFrom(this.total$, this.originalResult$),
+    return combineLatest([this.select('limit'), this.select('offset')]).pipe(
+      withLatestFrom(this.select('total'), this.select('originalResult')),
       switchMap(([[limit, offset], total, original]) =>
         this.pokemonService.getPokemon(limit, offset, {
           count: total,
@@ -84,7 +68,7 @@ export class PokemonStateService extends RxState<PokemonState> {
   private queryEffect$() {
     return this.select('query').pipe(
       distinctUntilChanged(),
-      withLatestFrom(this.originalResult$),
+      withLatestFrom(this.select('originalResult')),
       map(([query, data]) => (!query ? data : this.filter(data, query))),
     );
   }
