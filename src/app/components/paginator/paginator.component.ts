@@ -54,7 +54,7 @@ export interface Pagination {
       </span>
       <button
         type="button"
-        [disabled]="currentPage === lastPage"
+        [disabled]="currentPage === lastPage || !lastPage"
         (click)="changePageToNext($event)"
         class="paginator-next"
       >
@@ -62,7 +62,7 @@ export interface Pagination {
       </button>
       <button
         type="button"
-        [disabled]="currentPage === lastPage"
+        [disabled]="currentPage === lastPage || !lastPage"
         (click)="changePageToLast($event)"
         class="paginator-last"
       >
@@ -191,12 +191,14 @@ export class PaginatorComponent implements OnInit, OnChanges {
 
   updatePageLinks() {
     this.pageLinks = [];
-    let boundaries = this.calculatePageLinkBoundaries(),
-      start = boundaries[0],
-      end = boundaries[1];
+    let [start, end] = this.calculatePageLinkBoundaries();
 
     for (let i = start; i <= end; i++) {
       this.pageLinks.push(i + 1);
+    }
+
+    if (!this.pageLinks.length && !!this.totalRecords) {
+      this.pageLinks.push(1);
     }
   }
 

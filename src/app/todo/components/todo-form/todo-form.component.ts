@@ -20,7 +20,7 @@ import { Todo } from '../../todo.model';
       </div>
       <div class="form-control">
         <label for="completed">
-          <input type="checkbox" formControlName="completed" />
+          <input id="completed" type="checkbox" formControlName="completed" />
           Complete
         </label>
       </div>

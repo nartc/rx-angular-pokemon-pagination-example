@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Pagination } from '../components/paginator/paginator.component';
 import { PokemonStateService } from './pokemon-state.service';
 
 @Component({
@@ -44,21 +45,21 @@ export class PokemonComponent {
 
   constructor(private readonly pokemonStateService: PokemonStateService) {}
 
-  onPageChanged($event: { page: number; rows: number; first: number }) {
+  onPageChanged({ rows, page, first }: Pagination) {
     this.pokemonStateService.set(({ limit }) => {
-      if ($event.rows !== limit) {
+      if (rows !== limit) {
         return {
           currentPage: 1,
-          limit: $event.rows,
+          limit: rows,
           offset: 0,
           query: '',
         };
       }
 
       return {
-        currentPage: $event.page,
-        limit: $event.rows,
-        offset: $event.first - $event.rows,
+        currentPage: page,
+        limit: rows,
+        offset: first - rows,
         query: '',
       };
     });
