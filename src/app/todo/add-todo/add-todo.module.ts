@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AddTodoComponent } from './add-todo.component';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AddTodoComponent } from './add-todo.component';
 
 const routes = [{ path: '', component: AddTodoComponent }];
 

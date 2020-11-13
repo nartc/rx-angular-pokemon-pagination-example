@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { PaginatorComponent } from './paginator.component';
 import { CommonModule } from '@angular/common';
-import {FormsModule} from "@angular/forms";
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { PaginatorComponent } from './paginator.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule],

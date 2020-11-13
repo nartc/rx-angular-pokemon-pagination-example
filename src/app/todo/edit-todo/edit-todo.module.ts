@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {LetModule} from "@rx-angular/template";
-import { EditTodoComponent } from './edit-todo.component';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { LetModule } from '@rx-angular/template';
+import { EditTodoComponent } from './edit-todo.component';
 
 const routes = [{ path: '', component: EditTodoComponent }];
 
