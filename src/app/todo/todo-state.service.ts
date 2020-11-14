@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { RxState, selectSlice } from '@rx-angular/state';
-import { Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { getCompleteStatus } from '../utils/get-complete-status.util';
 import { PaginationState } from '../utils/pagination-state.model';
@@ -13,11 +13,11 @@ export interface TodoState extends PaginationState {
   todos: Todo[];
   filteredTodos: Todo[];
   pagedTodos: Todo[];
-  selected: number;
 }
 
 @Injectable()
 export class TodoStateService extends RxState<TodoState> {
+  private readonly $selected = new Subject<number>();
   readonly vm$ = this.select(
     selectSlice([
       'status',
@@ -46,43 +46,51 @@ export class TodoStateService extends RxState<TodoState> {
       filteredTodos: [],
       todos: [],
     });
-    this.connect(
-      this.todoService.getTodos().pipe(
-        map(({ data, status }) => ({
-          status,
-          todos: data,
-          filteredTodos: data,
-          total: data.length,
-        })),
-      ),
-    );
-    this.connect(this.queryEffect$());
-    this.connect('pagedTodos', this.pagedEffect$());
-    this.hold(
-      this.select('selected').pipe(distinctUntilChanged()),
-      (selectedId) => {
-        if (selectedId) {
-          // TODO: rx-angular bug. Waiting on vendor fix
-          this.ngZone.run(() => {
-            this.router.navigate(['/todo', selectedId]);
-          });
-        }
-      },
-    );
+    this.initEffect();
+    this.paginationEffect();
+    this.queryEffect();
+
+    this.hold(this.$selected.pipe(distinctUntilChanged()), (selectedId) => {
+      if (selectedId) {
+        // TODO: rx-angular bug. Waiting on vendor fix
+        this.ngZone.run(() => {
+          this.router.navigate(['/todo', selectedId]);
+        });
+      }
+    });
   }
 
-  private pagedEffect$() {
-    return this.select(selectSlice(['limit', 'offset', 'filteredTodos'])).pipe(
+  setSelected(id: number): void {
+    this.$selected.next(id);
+  }
+
+  private initEffect(): void {
+    const getTodos = this.todoService.getTodos().pipe(
+      map(({ data, status }) => ({
+        status,
+        todos: data,
+        filteredTodos: data,
+        total: data.length,
+      })),
+    );
+    this.connect(getTodos);
+  }
+
+  private paginationEffect(): void {
+    const effect = this.select(
+      selectSlice(['limit', 'offset', 'filteredTodos']),
+    ).pipe(
       withLatestFrom(this.select('total')),
       map(([{ limit, offset, filteredTodos }, total]) => {
         if (total < limit) return filteredTodos;
         return filteredTodos.slice(offset, limit + offset);
       }),
     );
+    this.connect('pagedTodos', effect);
   }
 
-  private queryEffect$(): Observable<{ filteredTodos: Todo[]; total: number }> {
-    return this.select('query').pipe(
+  private queryEffect(): void {
+    const effect = this.select('query').pipe(
       distinctUntilChanged(),
       withLatestFrom(this.select('todos')),
       map(([query, todos]) => {
@@ -92,6 +100,7 @@ export class TodoStateService extends RxState<TodoState> {
       }),
       map((todos) => ({ filteredTodos: todos, total: todos.length })),
     );
+    this.connect(effect);
   }
 
   private filter(todos, trimmed: string): Todo[] {

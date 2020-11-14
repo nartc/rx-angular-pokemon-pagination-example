@@ -65,7 +65,7 @@ export class TodoComponent {
   }
 
   onEditClicked(id: number) {
-    this.todoStateService.set({ selected: id });
+    this.todoStateService.setSelected(id);
   }
 
   onPageChanged({ rows, page, first }: Pagination) {

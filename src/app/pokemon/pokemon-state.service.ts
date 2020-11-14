@@ -42,12 +42,15 @@ export class PokemonStateService extends RxState<PokemonState> {
       originalResult: [],
       total: 0,
     });
-    this.connect(this.effect$());
-    this.connect('filteredResult', this.queryEffect$());
+    this.paginationEffect();
+    this.queryEffect();
   }
 
-  private effect$() {
-    return combineLatest([this.select('limit'), this.select('offset')]).pipe(
+  private paginationEffect(): void {
+    const effect = combineLatest([
+      this.select('limit'),
+      this.select('offset'),
+    ]).pipe(
       withLatestFrom(this.select('total'), this.select('originalResult')),
       switchMap(([[limit, offset], total, original]) =>
         this.pokemonService.getPokemon(limit, offset, {
@@ -64,14 +67,16 @@ export class PokemonStateService extends RxState<PokemonState> {
         originalResult: data.results,
       })),
     );
+    this.connect(effect);
   }
 
-  private queryEffect$() {
-    return this.select('query').pipe(
+  private queryEffect(): void {
+    const effect = this.select('query').pipe(
       distinctUntilChanged(),
       withLatestFrom(this.select('originalResult')),
       map(([query, data]) => (!query ? data : this.filter(data, query))),
     );
+    this.connect('filteredResult', effect);
   }
 
   private filter(data: Pokemon[], query: string): Pokemon[] {
