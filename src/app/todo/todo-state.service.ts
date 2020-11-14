@@ -49,15 +49,7 @@ export class TodoStateService extends RxState<TodoState> {
     this.initEffect();
     this.paginationEffect();
     this.queryEffect();
-
-    this.hold(this.$selected.pipe(distinctUntilChanged()), (selectedId) => {
-      if (selectedId) {
-        // TODO: rx-angular bug. Waiting on vendor fix
-        this.ngZone.run(() => {
-          this.router.navigate(['/todo', selectedId]);
-        });
-      }
-    });
+    this.goToSelectedEffect();
   }
 
   setSelected(id: number): void {
@@ -101,6 +93,18 @@ export class TodoStateService extends RxState<TodoState> {
       map((todos) => ({ filteredTodos: todos, total: todos.length })),
     );
     this.connect(effect);
+  }
+
+  private goToSelectedEffect(): void {
+    const effect = (selectedId: number) => {
+      if (selectedId) {
+        // TODO: rx-angular bug. Waiting on vendor fix
+        this.ngZone.run(() => {
+          this.router.navigate(['/todo', selectedId]);
+        });
+      }
+    };
+    this.hold(this.$selected.pipe(distinctUntilChanged()), effect);
   }
 
   private filter(todos, trimmed: string): Todo[] {
