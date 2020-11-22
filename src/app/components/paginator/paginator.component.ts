@@ -61,11 +61,15 @@ export interface Pagination {
         <span>>></span>
       </button>
       <select
-        [(ngModel)]="rows"
-        (ngModelChange)="onRppChange()"
+        [value]="rows"
+        (change)="onRppChange($event)"
         class="paginator-rows-per-page"
       >
-        <option *ngFor="let item of rowsPerPageOptions" [value]="item">
+        <option
+          *ngFor="let item of rowsPerPageOptions"
+          [selected]="rows === item"
+          [value]="item.toString()"
+        >
           {{ item }}
         </option>
       </select>
@@ -128,19 +132,20 @@ export class PaginatorComponent implements OnChanges {
     event.preventDefault();
   }
 
-  onRppChange() {
+  onRppChange($event: Event) {
+    const value = ($event.target as HTMLSelectElement).value;
+    this.rows = Number(value);
     this.changePage(this.getPage());
   }
 
   private changePage(p: number) {
     const pc = this.getPageCount();
-    const rows = Number(this.rows);
 
     if (p >= 0 && p <= pc) {
       this.onPageChange.emit({
         page: p,
-        first: rows * p,
-        rows: rows,
+        first: this.rows * p,
+        rows: this.rows,
       });
     }
   }
